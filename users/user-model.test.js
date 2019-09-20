@@ -18,14 +18,44 @@ describe('user model', () => {
             expect(user).toHaveLength(2);
         });
         it('should insert user into the db', async () => {
-            const [id] = await Users.add({username: 'John', password: 'pass'});
-            const [id2] = await Users.add({username: 'Dave', password: 'pass'});
-
-            let user1 = await db('users').where({id}).first();
-            let user2 = await db('users').where({id : id2}).first();
-
-            expect(user1.name).toBe('John');
-            expect(user2.name).toBe('Dave');
+            let user1 = await Users.add({username: 'John', password: 'pass'});
+            let user2 = await Users.add({username: 'Dave', password: 'pass'});
+            
+            expect(user1.username).toBe('John');
+            expect(user2.username).toBe('Dave');
         });
     });
+    describe('find', () => {
+        it('should find all the users from the db', async () => {
+            await Users.add({username: 'John', password: 'pass'});
+            await Users.add({username: 'Dave', password: 'pass'});
+            
+            const users = await db('users')
+            const usersFind = await Users.find('users')
+            expect(users).toEqual(usersFind)
+        });
+    });
+    describe('findBy', () => {
+        it('should find by filter from the db', async () => {
+            const {username} = await Users.add({username: 'John', password: 'pass'});
+
+            const user = await db('users').where({username}).first()
+            const equalUser = await Users.findBy({username})
+
+            expect(user).toEqual(equalUser)
+
+
+        });
+    })
+    describe('findById', () => {
+        it('should find by id from the db', async () => {
+            const {id} = await Users.add({username: 'John', password: 'pass'});
+            const user = await db('users').where({id}).first();
+            const equalUser = await Users.findById({id})
+
+            expect(user).toEqual(equalUser)
+
+
+        });
+    })
 });
